@@ -92,6 +92,22 @@ input {
     color: #c2a2da
 }
 
+.lowme {
+    color: #dbc5eb
+}
+
+.lowdo {
+    color: #ff6682
+}
+
+.megprobal-fail {
+    color: #c80000
+}
+
+.megprobal-siker {
+    color: #00c800
+}
+
 .ame {
     color: #956cb4
 }

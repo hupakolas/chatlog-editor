@@ -4,10 +4,10 @@ function useRegex(input) {
     return logPrefix.test(input);
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     function e() {
         $(".generated").remove(), $(".clear").remove();
-        
+
         // Get lines from textarea
         var lines = $("textarea").val().replace(/<script>|<\/script>/g, "").split("\n");
 
@@ -19,8 +19,8 @@ $(document).ready(function() {
                 '<div class="generated" id="chatlogOutput">' + processedLine + '</div><div class="clear"></div>'
             );
         }
-        
-        $(".generated").each(function() {
+
+        $(".generated").each(function () {
             var lines = $(this).text().split('\n');
             var formattedLines = [];
 
@@ -28,7 +28,7 @@ $(document).ready(function() {
                 var line = lines[i];
 
                 function replaceColorCodes(str) {
-                    str = str.replace(/\{([A-Fa-f0-9]{6})\}/g, function(match, p1) {
+                    str = str.replace(/\{([A-Fa-f0-9]{6})\}/g, function (match, p1) {
                         return '<span style="color: #' + p1 + ';">';
                     }).replace(/\{([A-Fa-f0-9]{6})\}/g, '</span>');
 
@@ -45,15 +45,26 @@ $(document).ready(function() {
                 formattedLines.push(line);
             }
 
-            
+
             var formattedText = formattedLines.join('<br>');
 
             navigator.userAgent.indexOf("Chrome") != -1 && $(this).append(" ⠀");
 
-            if (formattedText.toLowerCase().startsWith('***')) {
-                $(this).addClass("me");
-            } 
-            else if(formattedText.toLowerCase().startsWith('* the time is')){
+            if (formattedText.toLowerCase().startsWith('*** [low]')) {
+                $(this).addClass("lowme");
+            }
+            else if (formattedText.toLowerCase().startsWith('***')) {
+                if (formattedText.toLowerCase().indexOf("megpróbálja") >= 0 && formattedText.toLowerCase().indexOf("és nem sikerül neki.") >= 0) {
+                    $(this).addClass("megprobal-fail");
+                }
+                else if (formattedText.toLowerCase().indexOf("megpróbál") >= 0 && formattedText.toLowerCase().indexOf("és sikerül neki.") >= 0) {
+                    $(this).addClass("megprobal-siker");
+                }
+                else {
+                    $(this).addClass("me");
+                }
+            }
+            else if (formattedText.toLowerCase().startsWith('* the time is')) {
                 $(this).addClass("time")
             }
             else if (formattedText.toLowerCase().startsWith('*')) {
@@ -68,8 +79,10 @@ $(document).ready(function() {
             formattedText.toLowerCase().indexOf(" mondja a megafonba:") >= 0 && $(this).addClass("megafon");
             formattedText.toLowerCase().indexOf(")) megaphone:") >= 0 && $(this).addClass("megafon");
             formattedText.toLowerCase().indexOf(" mondja rádióba:") >= 0 && $(this).addClass("radio");
+            formattedText.toLowerCase().indexOf("[low] *") >= 0 && $(this).addClass("lowdo");
+            formattedText.toLowerCase().indexOf(" mondja rádióba:") >= 0 && $(this).addClass("radio");
 
-            $(this).html(formattedText); 
+            $(this).html(formattedText);
 
             $(this).textContent += "‎  ";
             formattedText || $(this).remove();
@@ -88,49 +101,49 @@ $(document).ready(function() {
     var t = $.jStorage.get("lastCharName");
     t || $.jStorage.set("lastCharName", ""),
         $("#name").val($.jStorage.get("lastCharName")),
-        $("#name").bind("input propertychange", function() {
+        $("#name").bind("input propertychange", function () {
             (charName = $("#name").val().toLowerCase()),
-            $.jStorage.set("lastCharName", charName),
+                $.jStorage.set("lastCharName", charName),
                 e();
         });
     var r = $.jStorage.get("lastFontSize"),
         o = $.jStorage.get("lastLineHeight");
-        r || o ? ($(".output").css({
-                "font-size": $.jStorage.get("lastFontSize") + "px",
-                "line-height": ($.jStorage.get("lastFontSize") - 10) + "px",
-            }),
-            $("#font-label").text(
-                "font size (" + $.jStorage.get("lastFontSize") + "px):"
-            )) :
+    r || o ? ($(".output").css({
+        "font-size": $.jStorage.get("lastFontSize") + "px",
+        "line-height": ($.jStorage.get("lastFontSize") - 10) + "px",
+    }),
+        $("#font-label").text(
+            "font size (" + $.jStorage.get("lastFontSize") + "px):"
+        )) :
         ($.jStorage.set("lastFontSize", "12"),
-        $.jStorage.set("lastLineHeight", ($.jStorage.get("lastFontSize") - 10))),
+            $.jStorage.set("lastLineHeight", ($.jStorage.get("lastFontSize") - 10))),
         $(".output").css({
             "font-size": "12px",
             "line-height": "2px",
         })
-        
-        $("input[name='font-label']").bind("input propertychange", function() {
-            var newSize = parseInt($(this).val());
-            if (newSize >= 10 && newSize <= 64) {
-                $(".output").css({
-                    "font-size": newSize + "px",
-                    "line-height": (newSize - 10) + "px",
-                });
-                $("#font-label").text("font size (" + newSize + "px):");
-                $.jStorage.set("lastFontSize", newSize);
-                $.jStorage.set("lastLineHeight", newSize);
-            } else {}
-        });
+
+    $("input[name='font-label']").bind("input propertychange", function () {
+        var newSize = parseInt($(this).val());
+        if (newSize >= 10 && newSize <= 64) {
+            $(".output").css({
+                "font-size": newSize + "px",
+                "line-height": (newSize - 10) + "px",
+            });
+            $("#font-label").text("font size (" + newSize + "px):");
+            $.jStorage.set("lastFontSize", newSize);
+            $.jStorage.set("lastLineHeight", newSize);
+        } else { }
+    });
 
 
-    $("textarea").bind("input propertychange", function() {
-            e();
-        }),
+    $("textarea").bind("input propertychange", function () {
+        e();
+    }),
         $("#color-picker").spectrum({
             color: "#000",
             showInput: !0,
             preferredFormat: "hex",
-            change: function() {
+            change: function () {
                 $.jStorage.set("lastColor", $("#color-picker").spectrum("get").toHex()),
                     $(".generated").css(
                         "background-color",
