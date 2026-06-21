@@ -192,6 +192,14 @@ input {
     color: #fff
 }
 
+.languageText {
+    color: #7af5a2
+}
+
+.nameText {
+    color: #00b3ff
+}
+
 textarea {
     margin-top: 20px
 }

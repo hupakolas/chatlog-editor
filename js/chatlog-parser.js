@@ -28,6 +28,12 @@ $(document).ready(function () {
                 var line = lines[i];
 
                 function replaceColorCodes(str) {
+                    if (/^\[([^\]]+)\](.*?)mondja:/i.test(str)) {
+                        str = str.replace(/^\[([^\]]+)\](.*?)mondja:/i, function (match, bracket, name) {
+                            return '<span class="languageText">[' + bracket + ']</span><span class=nameText>' + name + '</span>mondja:';
+                        });
+                    }
+
                     str = str.replace(/\{([A-Fa-f0-9]{6})\}/g, function (match, p1) {
                         return '<span style="color: #' + p1 + ';">';
                     }).replace(/\{([A-Fa-f0-9]{6})\}/g, '</span>');
